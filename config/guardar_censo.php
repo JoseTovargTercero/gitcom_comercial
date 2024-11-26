@@ -1,23 +1,17 @@
 <?php
 require 'conexion.php';
 header('Content-Type: application/json');
+session_start();
 
 $data = json_decode(file_get_contents('php://input'), true);
+
 if (!$data) {
-    echo json_encode(["message" => "Datos no válidos"]);
+    echo json_encode(["error" => "Datos no válidos o estructura incorrecta"]);
     exit;
 }
 
 
-
-
-
-
-
-
-
-
-
+$user = $_SESSION['user'];
 // Verificar si el RIF ya existe
 $rif = $data["RIF"];
 $sql_check = "SELECT COUNT(*) FROM censo WHERE RIF = ?";
@@ -32,12 +26,12 @@ if ($stmt_check) {
 
     if ($count > 0) {
         // Si el RIF existe, hacer un UPDATE
-        $sql_update = "UPDATE censo SET PARROQUIA = ?, COMUNA = ?, COMUNIDAD = ?, DIRECCION_COMPLETA = ?, RAZON_SOCIAL = ?, SUJETO = ?, PROPETARIO = ?, CI = ?, TELEFONO = ?, CORREO = ?, SECTOR_COMERCIAL = ?, ACTIVIDAD_COMERCIAL = ?, REFERENCIA = ?, REFERENCIA_1 = ?, M2 = ?, CAPACIDAD_OPERATIVA = ?, ESTATUS = ?, gas_p = ?, BASURA = ?, AGUA = ?, AGUAS_SERVIDAS = ?, LAT = ?, LON = ?, gas_m = ?, gas_g = ?, FRECUENCIA_RECOLECCION = ?, USO_AGUA = ?, ALMACENAMIENTO_AGUA = ? WHERE RIF = ?";
+        $sql_update = "UPDATE censo SET PARROQUIA = ?, COMUNA = ?, COMUNIDAD = ?, DIRECCION_COMPLETA = ?, RAZON_SOCIAL = ?, SUJETO = ?, PROPETARIO = ?, CI = ?, TELEFONO = ?, CORREO = ?, SECTOR_COMERCIAL = ?, ACTIVIDAD_COMERCIAL = ?, REFERENCIA = ?, REFERENCIA_1 = ?, M2 = ?, CAPACIDAD_OPERATIVA = ?, ESTATUS = ?, gas_p = ?, BASURA = ?, AGUA = ?, AGUAS_SERVIDAS = ?, LAT = ?, LON = ?, gas_m = ?, gas_g = ?, FRECUENCIA_RECOLECCION = ?, USO_AGUA = ?, ALMACENAMIENTO_AGUA = ?, user = ? WHERE RIF = ?";
 
         $stmt_update = $conexion->prepare($sql_update);
         if ($stmt_update) {
             $stmt_update->bind_param(
-                "sssssssssssssssisisssssssssss",
+                "sssssssssssssssisissssssssssss",
                 $data["PARROQUIA"],
                 $data["COMUNA"],
                 $data["COMUNIDAD"],
@@ -66,6 +60,7 @@ if ($stmt_check) {
                 $data["FRECUENCIA_RECOLECCION"],
                 $data["USO_AGUA"],
                 $data["ALMACENAMIENTO_AGUA"],
+                $user,
                 $rif
             );
 
@@ -80,13 +75,13 @@ if ($stmt_check) {
         }
     } else {
         // Si el RIF no existe, hacer un INSERT
-        $sql_insert = "INSERT INTO censo (PARROQUIA, COMUNA, COMUNIDAD, DIRECCION_COMPLETA, RAZON_SOCIAL, SUJETO, RIF, PROPETARIO, CI, TELEFONO, CORREO, SECTOR_COMERCIAL, ACTIVIDAD_COMERCIAL, REFERENCIA, REFERENCIA_1, M2, CAPACIDAD_OPERATIVA, ESTATUS, gas_p, BASURA, AGUA, AGUAS_SERVIDAS, LAT, LON, gas_m, gas_g, FRECUENCIA_RECOLECCION, USO_AGUA, ALMACENAMIENTO_AGUA)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql_insert = "INSERT INTO censo (PARROQUIA, COMUNA, COMUNIDAD, DIRECCION_COMPLETA, RAZON_SOCIAL, SUJETO, RIF, PROPETARIO, CI, TELEFONO, CORREO, SECTOR_COMERCIAL, ACTIVIDAD_COMERCIAL, REFERENCIA, REFERENCIA_1, M2, CAPACIDAD_OPERATIVA, ESTATUS, gas_p, BASURA, AGUA, AGUAS_SERVIDAS, LAT, LON, gas_m, gas_g, FRECUENCIA_RECOLECCION, USO_AGUA, ALMACENAMIENTO_AGUA, user)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt_insert = $conexion->prepare($sql_insert);
         if ($stmt_insert) {
             $stmt_insert->bind_param(
-                "sssssssssssssssisisssssssssss",
+                "sssssssssssssssisissssssssssss",
                 $data["PARROQUIA"],
                 $data["COMUNA"],
                 $data["COMUNIDAD"],
@@ -115,7 +110,8 @@ if ($stmt_check) {
                 $data["gas_g"],
                 $data["FRECUENCIA_RECOLECCION"],
                 $data["USO_AGUA"],
-                $data["ALMACENAMIENTO_AGUA"]
+                $data["ALMACENAMIENTO_AGUA"],
+                $user
             );
 
             if ($stmt_insert->execute()) {

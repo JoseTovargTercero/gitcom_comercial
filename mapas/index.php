@@ -209,7 +209,7 @@ while ($r55 = $query55->fetch_object()) {
         </div>
         <!-- Campo SUJETO -->
         <div class="mb-3">
-            <label for="sujeto" class="form-label">Sujeto</label>
+            <label for="sujeto" class="form-label">Sujeto de aplicación</label>
             <input type="text" class="form-control" id="sujeto" name="SUJETO" required>
         </div>
 
@@ -245,12 +245,12 @@ while ($r55 = $query55->fetch_object()) {
         </div>
         <!-- Campo REFERENCIA -->
         <div class="mb-3">
-            <label for="referencia" class="form-label">Referencia</label>
+            <label for="referencia" class="form-label">Punto de referencia</label>
             <input type="text" class="form-control" id="referencia" name="REFERENCIA">
         </div>
         <!-- Campo REFERENCIA_1 -->
         <div class="mb-3">
-            <label for="referencia1" class="form-label">Referencia Alternativa</label>
+            <label for="referencia1" class="form-label">Punto de referencia Alternativa</label>
             <input type="text" class="form-control" id="referencia1" name="REFERENCIA_1">
         </div>
         <!-- Campo M2 -->
@@ -263,9 +263,9 @@ while ($r55 = $query55->fetch_object()) {
             <label for="capacidadOperativa" class="form-label">Capacidad Operativa</label>
             <select class="form-control" id="capacidadOperativa" name="CAPACIDAD_OPERATIVA" required>
                 <option value="">Seleccione</option>
-                <option value="0 A 20">0 A 20</option>
-                <option value="21 - 50">21 - 50</option>
-                <option value="> 50">> 50</option>
+                <option value="0 A 20">0 A 20 %</option>
+                <option value="21 - 50">21 - 50 %</option>
+                <option value="> 50">> 50 %</option>
             </select>
         </div>
         <!-- Campo ESTATUS -->
@@ -356,6 +356,7 @@ while ($r55 = $query55->fetch_object()) {
                 <option value="TANQUE 700 L">TANQUE 700 L</option>
                 <option value="TANQUE 1000L">TANQUE 1000L</option>
                 <option value="TANQUE 5000L">TANQUE 5000L</option>
+                <option value="NINGUNO">NINGUNO</option>
             </select>
         </div>
 
@@ -387,7 +388,7 @@ while ($r55 = $query55->fetch_object()) {
     <section class="w-100 cuerpo-pagina">
         <nav class="bg-white d-flex justify-content-between p-2 bg-white w-100 bartop animate__animated animate__fadeInDown">
             <span class="navbar-brand text-danger ps-2" href="#">GITCOM</span>
-            <a href="../controller/logoutController.php" class="btn btn-light me-2 text-danger">
+            <a href="../config/salir.php" class="btn btn-light me-2 text-danger">
                 <i class='bx bx-log-out-circle fz-16'></i>
             </a>
         </nav>
@@ -503,43 +504,75 @@ while ($r55 = $query55->fetch_object()) {
 
 
 
-
         async function submitForm(event) {
             event.preventDefault();
-            const formData = new FormData(document.getElementById('censoForm'));
+
+            // Obtener el formulario y sus datos
+            const form = document.getElementById('censoForm');
+            const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            if ($('#basura').val() == 'saneamiento' && $('#frecuencia').val() == '') {
-                alert('Frecuencia de recolección no puede estar vacía');
-                return
+            // Validaciones específicas
+            if (data.basura === 'saneamiento' && !data.frecuencia) {
+                Swal.fire({
+                    title: "Error",
+                    icon: 'warning',
+                    text: "Frecuencia de recolección no puede estar vacía",
+                    confirmButtonText: "Ok",
+                });
+                return;
             }
 
+            try {
+                // Enviar los datos al servidor
+                const response = await fetch('../config/guardar_censo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-            //try {
-            const response = await fetch('../config/guardar_censo.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            if (result.success) {
-                document.getElementById('censoForm').classList.add('hide')
-                $('.bartop').removeClass('hide')
-                $('.barbot').removeClass('hide')
-                get_puntos()
+                // Procesar la respuesta
+                const result = await response.json();
 
-                document.getElementById('censoForm').reset()
+                if (response.ok && result.success) {
+                    // Si el envío es exitoso
+                    form.reset(); // Reiniciar formulario
+                    form.classList.add('hide'); // Ocultar formulario
 
+                    // Mostrar barra superior/inferior
+                    document.querySelector('.bartop').classList.remove('hide');
+                    document.querySelector('.barbot').classList.remove('hide');
+
+                    // Llamar a función adicional (si es necesaria)
+                    get_puntos();
+
+                    Swal.fire({
+                        title: "Éxito",
+                        icon: 'success',
+                        html: result.success,
+                        confirmButtonText: "Ok",
+                    });
+                } else {
+                    // Si hubo un error en la respuesta
+                    Swal.fire({
+                        title: "Error",
+                        icon: 'error',
+                        text: result.error || "Ocurrió un error inesperado",
+                        confirmButtonText: "Ok",
+                    });
+                    console.error("Error en la respuesta:", result);
+                }
+            } catch (error) {
+                // Manejo de errores de red o conexión
                 Swal.fire({
-                    title: "Éxito",
-                    icon: 'success',
-                    html: result.success,
+                    title: "Error",
+                    icon: 'error',
+                    text: "No se pudo enviar el formulario. Intenta de nuevo más tarde.",
                     confirmButtonText: "Ok",
-                }).then((result) => {});
-            } else {
-                console.log(response)
+                });
+                console.error("Error en la solicitud:", error);
             }
         }
 
