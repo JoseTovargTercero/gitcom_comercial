@@ -8,7 +8,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 // Preparar la consulta para obtener los datos, excepto LON y LAT
 $sql = "SELECT ID, RAZON_SOCIAL, SUJETO, LAT, LON
         FROM censo
-        WHERE LAT != '' AND LON != ''";
+        WHERE LAT != '' AND LON != '' AND  LAT != '-' AND LON != '-'";
 
 $stmt = $conexion->prepare($sql);
 $info = [];
