@@ -31,7 +31,7 @@ if ($stmt_check) {
         $stmt_update = $conexion->prepare($sql_update);
         if ($stmt_update) {
             $stmt_update->bind_param(
-                "sssssssssssssssisissssssssssss",
+                "ssssssssssssssssssssssssssssss",
                 $data["PARROQUIA"],
                 $data["COMUNA"],
                 $data["COMUNIDAD"],
