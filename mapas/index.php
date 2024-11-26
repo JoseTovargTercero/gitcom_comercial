@@ -513,7 +513,7 @@ while ($r55 = $query55->fetch_object()) {
             const data = Object.fromEntries(formData.entries());
 
             // Validaciones específicas
-            if (data.basura === 'saneamiento' && !data.frecuencia) {
+            if (data.basura === 'saneamiento' && data.frecuencia == '') {
                 Swal.fire({
                     title: "Error",
                     icon: 'warning',
