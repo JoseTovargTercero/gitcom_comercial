@@ -513,7 +513,7 @@ while ($r55 = $query55->fetch_object()) {
             const data = Object.fromEntries(formData.entries());
 
             // Validaciones específicas
-            if (data.basura === 'saneamiento' && data.frecuencia == '') {
+            if (data.basura && data.basura.trim().toLowerCase() === 'saneamiento' && (!data.frecuencia || data.frecuencia.trim() === '')) {
                 Swal.fire({
                     title: "Error",
                     icon: 'warning',
@@ -522,6 +522,8 @@ while ($r55 = $query55->fetch_object()) {
                 });
                 return;
             }
+            console.log("Basura:", data.basura);
+            console.log("Frecuencia:", data.frecuencia);
 
             try {
                 // Enviar los datos al servidor
