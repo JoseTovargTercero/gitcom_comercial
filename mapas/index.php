@@ -236,12 +236,25 @@ while ($r55 = $query55->fetch_object()) {
         <!-- Campo SECTOR_COMERCIAL -->
         <div class="mb-3">
             <label for="sectorComercial" class="form-label">Sector Comercial</label>
-            <input type="text" class="form-control" id="sectorComercial" name="SECTOR_COMERCIAL" required>
+            <select type="text" class="form-control" id="sectorComercial" name="SECTOR_COMERCIAL" required>
+                <option value="">Seleccione</option>
+                <option value="COMIDAS Y BEBIDAS">COMIDAS Y BEBIDAS</option>
+                <option value="TELECOMUNICACIONES">TELECOMUNICACIONES</option>
+                <option value="SALUD">SALUD</option>
+                <option value="MANOFACTURA">MANOFACTURA</option>
+                <option value="TURISMO">TURISMO</option>
+                <option value="HOSTELERIA">HOSTELERIA</option>
+                <option value="TRANSPORTE">TRANSPORTE</option>
+                <option value="CONSTRUCCION">CONSTRUCCION</option>
+                <option value="OTRO">OTRO</option>
+            </select>
         </div>
         <!-- Campo ACTIVIDAD_COMERCIAL -->
         <div class="mb-3">
             <label for="actividadComercial" class="form-label">Actividad Comercial</label>
-            <input type="text" class="form-control" id="actividadComercial" name="ACTIVIDAD_COMERCIAL" required>
+            <select type="text" class="form-control" id="actividadComercial" name="ACTIVIDAD_COMERCIAL" required>
+                <option value="">Seleccione</option>
+            </select>
         </div>
         <!-- Campo REFERENCIA -->
         <div class="mb-3">
@@ -579,6 +592,74 @@ while ($r55 = $query55->fetch_object()) {
         }
 
 
+        let actividades = {
+            'COMIDAS Y BEBIDAS': [
+                'RESTAURANTES',
+                'VENTA DE VIVERES',
+                'CAFETERIAS',
+                'PANADERIA',
+                'PIZERIAS',
+                'VENTA DE COMIDA RAPIDA',
+                'BODEGONES',
+                'BODEGAS',
+                'SUPERMERCADOS',
+                'CARNICERIAS',
+                'CHARCUTERIA',
+                'OTROS'
+            ],
+            'SALUD': [
+                'FARMACIAS',
+                'CENTROS MEDICOS',
+                'CLINICAS',
+                'CENTROS DE ECOGRAFIAS',
+                'LABORATORIOS',
+                'CENTROS ODONTOLOGICOS',
+                'OTROS'
+            ],
+            'TELECOMUNICACIONES': [
+                'VENTA DE TELEFONIA',
+                'REPARACION DE EQUIPOS TECNOLOGICOS',
+                'CYBER',
+                'VENTA DE ACCESORIOS  PARA EQUIPOS TECNOLOGICOS',
+                'OTROS'
+            ],
+            'MANOFACTURA': [
+                'VENTA DE ROPA',
+                'ELECTRODOMESTICOS',
+                'CENTRO DE COPIADOS',
+                'PAPELERIAS',
+                'FOTOGRAFIA',
+                'VENTA DE CALZADOS',
+                'VENTA DE RESPUETOS',
+                'VENTA DE TELAS',
+                'COSMETICOS',
+                'VENTA DE MOTOS',
+                'OPTICA',
+                'OTROS'
+            ],
+            'TURISMO': [
+                'PRESTADORES DE SERVICIOS TURISTICOS',
+                'OTROS'
+            ],
+            'HOSTELERIA': [
+                'HOTEL',
+                'OTROS'
+            ],
+            'TRANSPORTE': [
+                'SERVICIO DE MOTO TAXIS Y TAXIS',
+                'OTROS'
+            ],
+            'CONSTRUCCION': [
+                'FERRETERIA',
+                'CERRAJERIA',
+                'OTROS'
+            ],
+            'OTRO': [
+                'OTROS'
+            ]
+
+        }
+
 
         /**
          * Select all elements with the class 'form-control' and attach an 'input' event listener
@@ -586,10 +667,31 @@ while ($r55 = $query55->fetch_object()) {
          * If it does, remove the 'border-danger' class from the element
          */
 
+
         $(document).ready(function() {
             $(".form-control").on("input", function() {
                 if ($(this).hasClass("bg-light-danger")) {
                     $(this).removeClass("bg-light-danger");
+                }
+            });
+
+
+            document.getElementById('sectorComercial').addEventListener('change', function() {
+                let sector = this.value;
+                let actividadComercialSelect = document.getElementById('actividadComercial');
+
+                // Limpiar las opciones actuales
+                actividadComercialSelect.innerHTML = '<option value="">Seleccione</option>';
+
+                // Comprobar si el sector seleccionado tiene actividades
+                if (actividades[sector]) {
+                    // Añadir las opciones correspondientes al sector
+                    actividades[sector].forEach(function(actividad) {
+                        let option = document.createElement('option');
+                        option.value = actividad;
+                        option.textContent = actividad;
+                        actividadComercialSelect.appendChild(option);
+                    });
                 }
             });
         });
