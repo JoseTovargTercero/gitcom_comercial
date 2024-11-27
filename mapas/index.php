@@ -241,7 +241,7 @@ while ($r55 = $query55->fetch_object()) {
                 <option value="COMIDAS Y BEBIDAS">COMIDAS Y BEBIDAS</option>
                 <option value="TELECOMUNICACIONES">TELECOMUNICACIONES</option>
                 <option value="SALUD">SALUD</option>
-                <option value="MANOFACTURA">MANOFACTURA</option>
+                <option value="MANUFACTURA">MANUFACTURA</option>
                 <option value="TURISMO">TURISMO</option>
                 <option value="HOSTELERIA">HOSTELERIA</option>
                 <option value="TRANSPORTE">TRANSPORTE</option>
@@ -623,7 +623,7 @@ while ($r55 = $query55->fetch_object()) {
                 'VENTA DE ACCESORIOS  PARA EQUIPOS TECNOLOGICOS',
                 'OTROS'
             ],
-            'MANOFACTURA': [
+            'MANUFACTURA': [
                 'VENTA DE ROPA',
                 'ELECTRODOMESTICOS',
                 'CENTRO DE COPIADOS',
